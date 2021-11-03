@@ -75,7 +75,7 @@ func main() {
 
 			protected.GET("/manageCourses", controller.ListManageCourses)
 			protected.GET("/manageCourse/:id", controller.GetManageCourse)
-			protected.POST("manageCourses", controller.CreateManageCourse)
+			protected.POST("/manageCourses", controller.CreateManageCourse)
 			protected.DELETE("/manageCourses/:id", controller.DeleteManagCourse)
 
 			// Enrollment Registration subsystem

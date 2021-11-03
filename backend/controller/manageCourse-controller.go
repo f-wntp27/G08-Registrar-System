@@ -66,7 +66,7 @@ func CreateManageCourse(c *gin.Context) {
 func GetManageCourse(c *gin.Context) {
 	var manageCourse entity.ManageCourse
 	id := c.Param("id")
-	if err := entity.DB().Preload("Professor").Preload("Course").Preload("TA").Preload("Room").Raw("SELECT * FROM manageCourses WHERE id = ?", id).Find(&manageCourse).Error; err != nil {
+	if err := entity.DB().Preload("Professor").Preload("Course").Preload("TA").Preload("Room").Raw("SELECT * FROM manage_courses WHERE id = ?", id).Find(&manageCourse).Error; err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -76,7 +76,7 @@ func GetManageCourse(c *gin.Context) {
 // GET /manageCourses
 func ListManageCourses(c *gin.Context) {
 	var manageCourses []entity.ManageCourse
-	if err := entity.DB().Preload("Professor").Preload("Course").Preload("TA").Preload("Room").Raw("SELECT * FROM manageCourses").Find(&manageCourses).Error; err != nil {
+	if err := entity.DB().Preload("Professor").Preload("Course").Preload("TA").Preload("Room").Raw("SELECT * FROM manage_courses").Find(&manageCourses).Error; err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -87,7 +87,7 @@ func ListManageCourses(c *gin.Context) {
 // DELETE /managCourses/:id
 func DeleteManagCourse(c *gin.Context) {
 	id := c.Param("id")
-	if tx := entity.DB().Exec("DELETE FROM managCourses WHERE id = ?", id); tx.RowsAffected == 0 {
+	if tx := entity.DB().Exec("DELETE FROM manag_courses WHERE id = ?", id); tx.RowsAffected == 0 {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "managecourse not found"})
 		return
 	}
