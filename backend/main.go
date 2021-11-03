@@ -13,7 +13,7 @@ func CORSMiddleware() gin.HandlerFunc {
 		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
 		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
 		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
-		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT, DELETE")
 
 		if c.Request.Method == "OPTIONS" {
 			c.AbortWithStatus(204)
@@ -75,6 +75,12 @@ func main() {
 			protected.GET("/bills/enrollments/:id", controller.ListEnrollmentForBill)
 
 			// Request Register subsystem
+			protected.GET("/requestregister/type", controller.ListRequestType)
+			protected.GET("/requestregister/status", controller.ListRequestStatus)
+
+			protected.POST("/requestregister", controller.CreateRequestRegister)
+			protected.GET("/requestregisters", controller.ListRequestRegister)
+			protected.DELETE("/requestregister", controller.DeleteRequestRegister)
 		}
 	}
 
@@ -82,4 +88,7 @@ func main() {
 	r.POST("/student/login", controller.LoginStudent)
 	r.POST("/staff/login", controller.LoginStaff)
 	r.POST("/teacher/login", controller.LoginTeacher)
+
+	// Run server
+	r.Run()
 }
