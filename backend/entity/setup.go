@@ -22,10 +22,10 @@ func SetupDatabase() {
 		&Prefix{},
 		&Faculty{},
 		&Department{},
-		&Teacher{},
 		&StudentRecord{},
 
 		// Manage Course subsystem
+		&Professor{},
 		&TA{},
 		&Room{},
 		&Course{},

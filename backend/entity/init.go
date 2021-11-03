@@ -73,20 +73,20 @@ var department_cpe = Department{
 	FacultyID: &faculty_engineer.ID,
 }
 
-// TeacherRecord data
-var teacher_AA = Teacher{
-	TeacherName:  "AA",
-	TeacherEmail: "AA@g.sut.ac.th",
-	ProfessorID:  "11111111",
-	Password:     SetupPassword("123456"),
-	DepartmentID: &department_cpe.ID,
+// Professor data
+var teacher_AA = Professor{
+	TeacherName:   "ดร.ศรัญญา กาญจนวัฒนา",
+	TeacherEmail:  "AA@gmail.com",
+	ProfessorCode: "R1234567",
+	Password:      SetupPassword("123456"),
+	DepartmentID:  &department_cpe.ID,
 }
-var teacher_BB = Teacher{
-	TeacherName:  "BB",
-	ProfessorID:  "22222222",
-	TeacherEmail: "BB@g.sut.ac.th",
-	Password:     SetupPassword("123456"),
-	DepartmentID: &department_cpe.ID,
+var teacher_BB = Professor{
+	TeacherName:   "ดร.ชาญวิทย์ แก้วกสิ",
+	TeacherEmail:  "BB@gmail.com",
+	ProfessorCode: "R555552",
+	Password:      SetupPassword("123456"),
+	DepartmentID:  &department_cpe.ID,
 }
 
 func Init_Teacher() {
@@ -97,8 +97,8 @@ func Init_Teacher() {
 	db.Model(&Department{}).Create(&department_cpe)
 
 	// TeacherRecord
-	db.Model(&Teacher{}).Create(&teacher_AA)
-	db.Model(&Teacher{}).Create(&teacher_BB)
+	db.Model(&Professor{}).Create(&teacher_AA)
+	db.Model(&Professor{}).Create(&teacher_BB)
 
 	State["Teacher"] = true
 }
@@ -186,8 +186,8 @@ var manage_sa = ManageCourse{
 	ManageCourseTime: time.Date(2021, 1, 1, 6, 0, 0, 0, time.UTC),
 	CourseID:         &course_sa.ID,
 	RoomID:           &room_01.ID,
-	TeacherID:        &teacher_AA.ID,
-	TaID:             &ta_ta01.ID,
+	ProfessorID:      &teacher_AA.ID,
+	TAID:             &ta_ta01.ID,
 }
 var manage_hh = ManageCourse{
 	Group:            1,
@@ -197,8 +197,8 @@ var manage_hh = ManageCourse{
 	ManageCourseTime: time.Date(2021, 1, 2, 6, 0, 0, 0, time.UTC),
 	CourseID:         &course_hh.ID,
 	RoomID:           &room_02.ID,
-	TeacherID:        &teacher_BB.ID,
-	TaID:             &ta_ta02.ID,
+	ProfessorID:      &teacher_BB.ID,
+	TAID:             &ta_ta02.ID,
 }
 
 func Init_ManageCourse() {

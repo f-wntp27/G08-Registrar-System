@@ -54,6 +54,30 @@ func main() {
 
 			// Manage Course subsystem
 
+			// Professor Routes
+			protected.GET("/professors", controller.ListProfessors)
+			protected.GET("/professor/:id", controller.GetProfessor)
+
+			// Course Routes
+			protected.GET("/courses", controller.ListCourses)
+			protected.GET("/course/:id", controller.GetCourse)
+			protected.POST("/courses", controller.CreateCourse)
+
+			// TA Routes
+			protected.GET("/tas", controller.ListTAs)
+			protected.GET("/ta/:id", controller.GetTA)
+			protected.POST("/tas", controller.CreateTA)
+
+			// Room Routes
+			protected.GET("/rooms", controller.ListRooms)
+			protected.GET("/room/:id", controller.GetRoom)
+			protected.POST("/rooms", controller.CreateRoom)
+
+			protected.GET("/manageCourses", controller.ListManageCourses)
+			protected.GET("/manageCourse/:id", controller.GetManageCourse)
+			protected.POST("manageCourses", controller.CreateManageCourse)
+			protected.DELETE("/manageCourses/:id", controller.DeleteManagCourse)
+
 			// Enrollment Registration subsystem
 			protected.GET("/enrollment_types", controller.ListEnrollmentTypes)
 			protected.GET("/manage_courses/course/:id", controller.ListManageCoursesFromCourseID)
@@ -87,7 +111,7 @@ func main() {
 	// Login
 	r.POST("/student/login", controller.LoginStudent)
 	r.POST("/staff/login", controller.LoginStaff)
-	r.POST("/teacher/login", controller.LoginTeacher)
+	r.POST("/professor/login", controller.LoginProfessor)
 
 	// Run server
 	r.Run()

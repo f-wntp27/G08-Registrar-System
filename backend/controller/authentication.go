@@ -23,7 +23,7 @@ type StudentResponse struct {
 	LastName    string
 	StudentCode string
 	Department  entity.Department
-	Advisor     entity.Teacher
+	Advisor     entity.Professor
 }
 
 type LoginStudentResponse struct {
@@ -154,22 +154,22 @@ func LoginStaff(c *gin.Context) {
 }
 
 /* --- Teacher Response --- */
-type TeacherResponse struct {
+type ProfessorResponse struct {
 	ID           uint
 	TeacherName  string
 	TeacherEmail string
 	ProfessorID  string
 }
 
-type LoginTeacherResponse struct {
-	Token   string          `json:"token"`
-	Teacher TeacherResponse `json:"teacher"`
+type LoginProfessorResponse struct {
+	Token     string            `json:"token"`
+	Professor ProfessorResponse `json:"professor"`
 }
 
-// POST /staff/login
-func LoginTeacher(c *gin.Context) {
+// POST /teacher/login
+func LoginProfessor(c *gin.Context) {
 	var payload LoginPayload
-	var teacher entity.Teacher
+	var teacher entity.Professor
 
 	if err := c.ShouldBindJSON(&payload); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -177,7 +177,7 @@ func LoginTeacher(c *gin.Context) {
 	}
 
 	if tx := entity.DB().
-		Raw("SELECT * FROM teachers WHERE professor_id = ?", payload.UserCode).First(&teacher); tx.RowsAffected == 0 {
+		Raw("SELECT * FROM professors WHERE professor_id = ?", payload.UserCode).First(&teacher); tx.RowsAffected == 0 {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "teacher not found"})
 		return
 	}
@@ -199,19 +199,19 @@ func LoginTeacher(c *gin.Context) {
 		ExpirationHours: 24,
 	}
 
-	signedToken, err := jwtWrapper.GenerateToken(teacher.ProfessorID)
+	signedToken, err := jwtWrapper.GenerateToken(teacher.ProfessorCode)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "error signing token"})
 		return
 	}
 
-	tokenResponse := LoginTeacherResponse{
+	tokenResponse := LoginProfessorResponse{
 		Token: signedToken,
-		Teacher: TeacherResponse{
+		Professor: ProfessorResponse{
 			ID:           teacher.ID,
 			TeacherName:  teacher.TeacherName,
 			TeacherEmail: teacher.TeacherEmail,
-			ProfessorID:  teacher.ProfessorID,
+			ProfessorID:  teacher.ProfessorCode,
 		},
 	}
 

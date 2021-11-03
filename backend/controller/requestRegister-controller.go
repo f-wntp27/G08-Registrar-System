@@ -134,8 +134,8 @@ func ListRequestRegister(c *gin.Context) {
 		Joins("Owner").
 		Find(&RequestRegisters, entity.DB().Where("owner_id = ?", studentRecord.ID))
 	for i, v := range RequestRegisters {
-		entity.DB().Model(&entity.Teacher{}).Where("id = ?", v.ManageCourse.TeacherID).Scan(&RequestRegisters[i].ManageCourse.Teacher)
-		entity.DB().Model(&entity.TA{}).Where("id = ?", v.ManageCourse.TaID).Scan(&RequestRegisters[i].ManageCourse.Ta)
+		entity.DB().Model(&entity.Professor{}).Where("id = ?", v.ManageCourse.ProfessorID).Scan(&RequestRegisters[i].ManageCourse.Professor)
+		entity.DB().Model(&entity.TA{}).Where("id = ?", v.ManageCourse.TAID).Scan(&RequestRegisters[i].ManageCourse.TA)
 		entity.DB().Model(&entity.Room{}).Where("id = ?", v.ManageCourse.RoomID).Scan(&RequestRegisters[i].ManageCourse.Room)
 		entity.DB().Model(&entity.Course{}).Where("id = ?", v.ManageCourse.CourseID).Scan(&RequestRegisters[i].ManageCourse.Course)
 	}

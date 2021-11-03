@@ -6,11 +6,26 @@ import (
 	"gorm.io/gorm"
 )
 
+type Professor struct {
+	gorm.Model
+	TeacherName   string
+	TeacherEmail  string
+	ProfessorCode string `gorm:"uniqueIndex"`
+	Password      string
+
+	DepartmentID *uint
+	Department   Department `gorm:"references:ID"`
+
+	StudentRecords []StudentRecord `gorm:"foreignKey:AdvisorID"`
+
+	ManageCourses []ManageCourse `gorm:"foreignKey:ProfessorID"`
+}
+
 type TA struct {
 	gorm.Model
 	TaCode        string
 	Name          string
-	ManageCourses []ManageCourse `gorm:"foreignKey:TaID"`
+	ManageCourses []ManageCourse `gorm:"foreignKey:TAID"`
 }
 
 type Room struct {
@@ -42,11 +57,11 @@ type ManageCourse struct {
 	RoomID *uint
 	Room   Room `gorm:"references:id"`
 
-	TeacherID *uint
-	Teacher   Teacher `gorm:"references:id"`
+	ProfessorID *uint
+	Professor   Professor `gorm:"references:id"`
 
-	TaID *uint
-	Ta   TA `gorm:"references:id"`
+	TAID *uint
+	TA   TA `gorm:"references:id"`
 
 	EnrollmentItems []EnrollmentItem `gorm:"foreignKey:ManageCourseID"`
 

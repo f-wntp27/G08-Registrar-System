@@ -20,7 +20,7 @@ type StaffAccount struct {
 
 	FirstName string
 	LastName  string
-	StaffCode string
+	StaffCode string `gorm:"uniqueIndex"`
 	Password  string
 
 	// 1 Staff บันทึกได้หลาย Student
@@ -42,22 +42,7 @@ type Department struct {
 
 	Faculty        Faculty         `gorm:"references:ID"`
 	StudentRecords []StudentRecord `gorm:"foreignKey:DepartmentID"`
-	Teachers       []Teacher       `gorm:"foreignKey:DepartmentID"`
-}
-
-type Teacher struct {
-	gorm.Model
-	TeacherName  string
-	TeacherEmail string
-	ProfessorID  string
-	Password     string
-
-	DepartmentID *uint
-	Department   Department `gorm:"references:ID"`
-
-	StudentRecords []StudentRecord `gorm:"foreignKey:AdvisorID"`
-
-	ManageCourses []ManageCourse `gorm:"foreignKey:TeacherID"`
+	Professors     []Professor     `gorm:"foreignKey:DepartmentID"`
 }
 
 type StudentRecord struct {
@@ -65,8 +50,8 @@ type StudentRecord struct {
 
 	FirstName   string
 	LastName    string
-	PersonalId  string
-	StudentCode string
+	PersonalId  string `gorm:"uniqueIndex"`
+	StudentCode string `gorm:"uniqueIndex"`
 	Password    string
 
 	// PrefixID ทำหน้าที่เป็น FK
@@ -79,7 +64,7 @@ type StudentRecord struct {
 
 	// AdvisorID ทำหน้าที่เป็น FK
 	AdvisorID *uint
-	Advisor   Teacher `gorm:"references:ID"`
+	Advisor   Professor `gorm:"references:ID"`
 
 	// CreatorID ทำหน้าที่เป็น FK
 	CreatorID *uint
