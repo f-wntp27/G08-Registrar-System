@@ -17,13 +17,13 @@ type LoginPayload struct {
 
 /* --- Student Response --- */
 type StudentResponse struct {
-	ID          uint              `json:"id"`
-	Prefix      entity.Prefix     `json:"prefix"`
-	FirstName   string            `json:"firstname"`
-	LastName    string            `json:"lastname"`
-	StudentCode string            `json:"studentcode"`
-	Department  entity.Department `json:"department"`
-	Advisor     entity.Teacher    `json:"advisor"`
+	ID          uint
+	Prefix      entity.Prefix
+	FirstName   string
+	LastName    string
+	StudentCode string
+	Department  entity.Department
+	Advisor     entity.Teacher
 }
 
 type LoginStudentResponse struct {
@@ -88,11 +88,11 @@ func LoginStudent(c *gin.Context) {
 
 /* --- Staff Response --- */
 type StaffResponse struct {
-	ID        uint          `json:"id"`
-	Prefix    entity.Prefix `json:"prefix"`
-	FirstName string        `json:"firstname"`
-	LastName  string        `json:"lastname"`
-	StaffCode string        `json:"staffcode"`
+	ID        uint
+	Prefix    entity.Prefix
+	FirstName string
+	LastName  string
+	StaffCode string
 }
 
 type LoginStaffResponse struct {
@@ -155,10 +155,10 @@ func LoginStaff(c *gin.Context) {
 
 /* --- Teacher Response --- */
 type TeacherResponse struct {
-	ID           uint   `json:"id"`
-	TeacherName  string `json:"teachername"`
-	TeacherEmail string `json:"teacheremail"`
-	//StaffCode string        `json:"staffcode"`
+	ID           uint
+	TeacherName  string
+	TeacherEmail string
+	ProfessorID  string
 }
 
 type LoginTeacherResponse struct {
@@ -177,7 +177,7 @@ func LoginTeacher(c *gin.Context) {
 	}
 
 	if tx := entity.DB().
-		Raw("SELECT * FROM teachers WHERE teacher_email = ?", payload.UserCode).First(&teacher); tx.RowsAffected == 0 {
+		Raw("SELECT * FROM teachers WHERE professor_id = ?", payload.UserCode).First(&teacher); tx.RowsAffected == 0 {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "teacher not found"})
 		return
 	}
@@ -199,7 +199,7 @@ func LoginTeacher(c *gin.Context) {
 		ExpirationHours: 24,
 	}
 
-	signedToken, err := jwtWrapper.GenerateToken(teacher.TeacherEmail)
+	signedToken, err := jwtWrapper.GenerateToken(teacher.ProfessorID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "error signing token"})
 		return
@@ -211,6 +211,7 @@ func LoginTeacher(c *gin.Context) {
 			ID:           teacher.ID,
 			TeacherName:  teacher.TeacherName,
 			TeacherEmail: teacher.TeacherEmail,
+			ProfessorID:  teacher.ProfessorID,
 		},
 	}
 
