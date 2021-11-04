@@ -7,14 +7,11 @@ import (
 
 	"sa-project-g08/backend/entity"
 
-	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 )
 
-const SecretKey = "secret"
-
-// GET : /api/requestregister/type
-// GET : /api/requestregister/type?id=1
+// GET : /requestregister/type
+// GET : /requestregister/type?id=1
 func ListRequestType(c *gin.Context) {
 	id := c.DefaultQuery("id", "")
 
@@ -34,8 +31,8 @@ func ListRequestType(c *gin.Context) {
 
 }
 
-// GET : /api/requestregister/status
-// GET : /api/requestregister/status?id=1
+// GET : /requestregister/status
+// GET : /requestregister/status?id=1
 func ListRequestStatus(c *gin.Context) {
 	id := c.DefaultQuery("id", "")
 
@@ -55,22 +52,12 @@ func ListRequestStatus(c *gin.Context) {
 
 }
 
-// POST : /api/requestregister
+// POST : /requestregister
 func CreateRequestRegister(c *gin.Context) {
-	cookie, _ := c.Cookie("jwt")
-
-	token, err := jwt.ParseWithClaims(cookie, &jwt.StandardClaims{}, func(t *jwt.Token) (interface{}, error) {
-		return []byte(SecretKey), nil
-	})
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"message": "unauthenticated"})
-		return
-	}
-
-	claims := token.Claims.(*jwt.StandardClaims)
+	userCode, _ := c.Get("userCode")
 
 	var studentRecord entity.StudentRecord
-	entity.DB().Model(&entity.StudentRecord{}).Where("id = ?", claims.Issuer).First(&studentRecord)
+	entity.DB().Model(&entity.StudentRecord{}).Where("student_code = ?", userCode).First(&studentRecord)
 
 	var requestRegister entity.RequestRegister
 	var manageCourse entity.ManageCourse
@@ -132,22 +119,12 @@ func CreateRequestRegister(c *gin.Context) {
 
 }
 
-// GET : /api/requestregisters
+// GET : /requestregisters
 func ListRequestRegister(c *gin.Context) {
-	cookie, _ := c.Cookie("jwt")
-
-	token, err := jwt.ParseWithClaims(cookie, &jwt.StandardClaims{}, func(t *jwt.Token) (interface{}, error) {
-		return []byte(SecretKey), nil
-	})
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"message": "unauthenticated"})
-		return
-	}
-
-	claims := token.Claims.(*jwt.StandardClaims)
+	userCode, _ := c.Get("userCode")
 
 	var studentRecord entity.StudentRecord
-	entity.DB().Model(&entity.StudentRecord{}).Where("id = ?", claims.Issuer).First(&studentRecord)
+	entity.DB().Model(&entity.StudentRecord{}).Where("student_code = ?", userCode).First(&studentRecord)
 
 	var RequestRegisters []entity.RequestRegister
 	entity.DB().Model(&entity.RequestRegister{}).
@@ -157,8 +134,8 @@ func ListRequestRegister(c *gin.Context) {
 		Joins("Owner").
 		Find(&RequestRegisters, entity.DB().Where("owner_id = ?", studentRecord.ID))
 	for i, v := range RequestRegisters {
-		entity.DB().Model(&entity.Teacher{}).Where("id = ?", v.ManageCourse.TeacherID).Scan(&RequestRegisters[i].ManageCourse.Teacher)
-		entity.DB().Model(&entity.TA{}).Where("id = ?", v.ManageCourse.TaID).Scan(&RequestRegisters[i].ManageCourse.Ta)
+		entity.DB().Model(&entity.Professor{}).Where("id = ?", v.ManageCourse.ProfessorID).Scan(&RequestRegisters[i].ManageCourse.Professor)
+		entity.DB().Model(&entity.TA{}).Where("id = ?", v.ManageCourse.TAID).Scan(&RequestRegisters[i].ManageCourse.TA)
 		entity.DB().Model(&entity.Room{}).Where("id = ?", v.ManageCourse.RoomID).Scan(&RequestRegisters[i].ManageCourse.Room)
 		entity.DB().Model(&entity.Course{}).Where("id = ?", v.ManageCourse.CourseID).Scan(&RequestRegisters[i].ManageCourse.Course)
 	}
@@ -167,24 +144,14 @@ func ListRequestRegister(c *gin.Context) {
 
 }
 
-// DELETE : /api/requestregister?id=5004
+// DELETE : /requestregister?id=5004
 func DeleteRequestRegister(c *gin.Context) {
 	id := c.DefaultQuery("id", "")
 
-	cookie, _ := c.Cookie("jwt")
-
-	token, err := jwt.ParseWithClaims(cookie, &jwt.StandardClaims{}, func(t *jwt.Token) (interface{}, error) {
-		return []byte(SecretKey), nil
-	})
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"message": "unauthenticated"})
-		return
-	}
-
-	claims := token.Claims.(*jwt.StandardClaims)
+	userCode, _ := c.Get("userCode")
 
 	var studentRecord entity.StudentRecord
-	entity.DB().Model(&entity.StudentRecord{}).Where("id = ?", claims.Issuer).First(&studentRecord)
+	entity.DB().Model(&entity.StudentRecord{}).Where("student_code = ?", userCode).First(&studentRecord)
 
 	var data entity.RequestRegister
 	sql := "DELETE FROM request_registers WHERE id = ? and owner_id = ?"

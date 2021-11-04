@@ -13,7 +13,7 @@ func CORSMiddleware() gin.HandlerFunc {
 		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
 		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
 		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
-		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT, DELETE")
 
 		if c.Request.Method == "OPTIONS" {
 			c.AbortWithStatus(204)
@@ -53,6 +53,23 @@ func main() {
 			protected.GET("/student_records", controller.ListStudentRecords)
 
 			// Manage Course subsystem
+			// Professor Routes
+			protected.GET("/professors", controller.ListProfessors)
+			protected.GET("/professor/:id", controller.GetProfessor)
+			// Course Routes
+			protected.GET("/courses", controller.ListCourses)
+			protected.GET("/course/:id", controller.GetCourse)
+			// TA Routes
+			protected.GET("/tas", controller.ListTAs)
+			protected.GET("/ta/:id", controller.GetTA)
+			// Room Routes
+			protected.GET("/rooms", controller.ListRooms)
+			protected.GET("/room/:id", controller.GetRoom)
+
+			protected.GET("/manageCourses", controller.ListManageCourses)
+			protected.GET("/manageCourse/:id", controller.GetManageCourse)
+			protected.POST("/manageCourses", controller.CreateManageCourse)
+			protected.DELETE("/manageCourses/:id", controller.DeleteManageCourse)
 
 			// Enrollment Registration subsystem
 			protected.GET("/enrollment_types", controller.ListEnrollmentTypes)
@@ -75,11 +92,20 @@ func main() {
 			protected.GET("/bills/enrollments/:id", controller.ListEnrollmentForBill)
 
 			// Request Register subsystem
+			protected.GET("/requestregister/type", controller.ListRequestType)
+			protected.GET("/requestregister/status", controller.ListRequestStatus)
+
+			protected.POST("/requestregister", controller.CreateRequestRegister)
+			protected.GET("/requestregisters", controller.ListRequestRegister)
+			protected.DELETE("/requestregister", controller.DeleteRequestRegister)
 		}
 	}
 
 	// Login
 	r.POST("/student/login", controller.LoginStudent)
 	r.POST("/staff/login", controller.LoginStaff)
-	r.POST("/teacher/login", controller.LoginTeacher)
+	r.POST("/professor/login", controller.LoginProfessor)
+
+	// Run server
+	r.Run()
 }

@@ -121,7 +121,7 @@ func ListFaculties(c *gin.Context) {
 func CreateStudentRecord(c *gin.Context) {
 	var prefix entity.Prefix
 	var department entity.Department
-	var advisor entity.Teacher
+	var advisor entity.Professor
 	var studentrecord entity.StudentRecord
 
 	// ผลลัพธ์ที่ได้จากขั้นตอนที่ 8 จะถูก bind เข้าตัวแปร studentRecord

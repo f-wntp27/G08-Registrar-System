@@ -22,7 +22,8 @@ func ListEnrollmentTypes(c *gin.Context) {
 func ListManageCoursesFromCourseID(c *gin.Context) {
 	id := c.Param("id")
 	var manageCourse []entity.ManageCourse
-	if err := entity.DB().Table("manage_courses").Preload("Course").Where("course_id = ?", id).Find(&manageCourse).Error; err != nil {
+	if err := entity.DB().Table("manage_courses").
+		Preload("Course").Preload("Professor").Preload("Room").Where("course_id = ?", id).Find(&manageCourse).Error; err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -122,7 +123,7 @@ func ListEnrollmentsFromStudentID(c *gin.Context) {
 	id := c.Param("id")
 	var enrollments []entity.Enrollment
 	if err := entity.DB().Table("enrollments").
-		Preload("StudentRecord").Preload("EnrollmentItems").
+		Preload("Owner").Preload("EnrollmentItems").
 		Preload("EnrollmentItems.EnrollmentType").
 		Preload("EnrollmentItems.ManageCourse").
 		Preload("EnrollmentItems.ManageCourse.Course").Where("owner_id = ?", id).Find(&enrollments).Error; err != nil {

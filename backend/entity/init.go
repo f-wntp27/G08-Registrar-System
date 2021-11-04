@@ -73,20 +73,20 @@ var department_cpe = Department{
 	FacultyID: &faculty_engineer.ID,
 }
 
-// TeacherRecord data
-var teacher_AA = Teacher{
-	TeacherName:  "AA",
-	TeacherEmail: "AA@g.sut.ac.th",
-	ProfessorID:  "11111111",
-	Password:     SetupPassword("123456"),
-	DepartmentID: &department_cpe.ID,
+// Professor data
+var teacher_AA = Professor{
+	TeacherName:   "ดร.ศรัญญา กาญจนวัฒนา",
+	TeacherEmail:  "AA@gmail.com",
+	ProfessorCode: "R1234567",
+	Password:      SetupPassword("123456"),
+	DepartmentID:  &department_cpe.ID,
 }
-var teacher_BB = Teacher{
-	TeacherName:  "BB",
-	ProfessorID:  "22222222",
-	TeacherEmail: "BB@g.sut.ac.th",
-	Password:     SetupPassword("123456"),
-	DepartmentID: &department_cpe.ID,
+var teacher_BB = Professor{
+	TeacherName:   "ดร.ชาญวิทย์ แก้วกสิ",
+	TeacherEmail:  "BB@gmail.com",
+	ProfessorCode: "R555552",
+	Password:      SetupPassword("123456"),
+	DepartmentID:  &department_cpe.ID,
 }
 
 func Init_Teacher() {
@@ -97,8 +97,8 @@ func Init_Teacher() {
 	db.Model(&Department{}).Create(&department_cpe)
 
 	// TeacherRecord
-	db.Model(&Teacher{}).Create(&teacher_AA)
-	db.Model(&Teacher{}).Create(&teacher_BB)
+	db.Model(&Professor{}).Create(&teacher_AA)
+	db.Model(&Professor{}).Create(&teacher_BB)
 
 	State["Teacher"] = true
 }
@@ -176,9 +176,14 @@ var course_hh = Course{
 	Name:       "HOLISTIC HEALTH",
 	Credit:     2,
 }
+var course_kdd = Course{
+	CourseCode: "523312",
+	Name:       "KNOWLEDGE DISCOVERY AND DATA MINING",
+	Credit:     4,
+}
 
 // ManageCourse data
-var manage_sa = ManageCourse{
+var manage_sa_g01 = ManageCourse{
 	Group:            1,
 	TeachingTime:     2,
 	UngraduatedYear:  2,
@@ -186,8 +191,19 @@ var manage_sa = ManageCourse{
 	ManageCourseTime: time.Date(2021, 1, 1, 6, 0, 0, 0, time.UTC),
 	CourseID:         &course_sa.ID,
 	RoomID:           &room_01.ID,
-	TeacherID:        &teacher_AA.ID,
-	TaID:             &ta_ta01.ID,
+	ProfessorID:      &teacher_AA.ID,
+	TAID:             &ta_ta01.ID,
+}
+var manage_sa_g02 = ManageCourse{
+	Group:            2,
+	TeachingTime:     2,
+	UngraduatedYear:  2,
+	Trimester:        1,
+	ManageCourseTime: time.Date(2021, 1, 1, 6, 0, 0, 0, time.UTC),
+	CourseID:         &course_sa.ID,
+	RoomID:           &room_01.ID,
+	ProfessorID:      &teacher_AA.ID,
+	TAID:             &ta_ta01.ID,
 }
 var manage_hh = ManageCourse{
 	Group:            1,
@@ -197,8 +213,19 @@ var manage_hh = ManageCourse{
 	ManageCourseTime: time.Date(2021, 1, 2, 6, 0, 0, 0, time.UTC),
 	CourseID:         &course_hh.ID,
 	RoomID:           &room_02.ID,
-	TeacherID:        &teacher_BB.ID,
-	TaID:             &ta_ta02.ID,
+	ProfessorID:      &teacher_BB.ID,
+	TAID:             &ta_ta02.ID,
+}
+var manage_kdd = ManageCourse{
+	Group:            1,
+	TeachingTime:     3,
+	UngraduatedYear:  2,
+	Trimester:        1,
+	ManageCourseTime: time.Date(2021, 1, 2, 6, 0, 0, 0, time.UTC),
+	CourseID:         &course_kdd.ID,
+	RoomID:           &room_02.ID,
+	ProfessorID:      &teacher_AA.ID,
+	TAID:             &ta_ta02.ID,
 }
 
 func Init_ManageCourse() {
@@ -218,10 +245,13 @@ func Init_ManageCourse() {
 	// Course
 	db.Model(&Course{}).Create(&course_sa)
 	db.Model(&Course{}).Create(&course_hh)
+	db.Model(&Course{}).Create(&course_kdd)
 
 	// ManageCourse
-	db.Model(&ManageCourse{}).Create(&manage_sa)
+	db.Model(&ManageCourse{}).Create(&manage_sa_g01)
+	db.Model(&ManageCourse{}).Create(&manage_sa_g02)
 	db.Model(&ManageCourse{}).Create(&manage_hh)
+	db.Model(&ManageCourse{}).Create(&manage_kdd)
 
 	State["ManageCourse"] = true
 }
@@ -244,26 +274,38 @@ var enroll_01 = Enrollment{
 }
 var enroll_02 = Enrollment{
 	EnrollDateTime:  time.Date(2021, 1, 5, 6, 0, 0, 0, time.UTC),
-	EnrollYear:      202,
-	EnrollTrimester: 1,
+	EnrollYear:      2020,
+	EnrollTrimester: 2,
 	TotalCredit:     course_sa.Credit,
+	OwnerID:         &student_B6200001.ID,
+}
+var enroll_03 = Enrollment{
+	EnrollDateTime:  time.Date(2021, 1, 5, 6, 0, 0, 0, time.UTC),
+	EnrollYear:      2020,
+	EnrollTrimester: 1,
+	TotalCredit:     course_kdd.Credit,
 	OwnerID:         &student_B6200002.ID,
 }
 
 // EnrollmentItem data
 var enroll_01_item_01 = EnrollmentItem{
 	EnrollmentID:     &enroll_01.ID,
-	ManageCourseID:   &manage_sa.ID,
+	ManageCourseID:   &manage_sa_g01.ID,
 	EnrollmentTypeID: &enrollmentType_Credit.ID,
 }
 var enroll_01_item_02 = EnrollmentItem{
 	EnrollmentID:     &enroll_01.ID,
 	ManageCourseID:   &manage_hh.ID,
-	EnrollmentTypeID: &enrollmentType_Credit.ID,
+	EnrollmentTypeID: &enrollmentType_Audit.ID,
 }
 var enroll_02_item_01 = EnrollmentItem{
+	EnrollmentID:     &enroll_03.ID,
+	ManageCourseID:   &manage_sa_g02.ID,
+	EnrollmentTypeID: &enrollmentType_Credit.ID,
+}
+var enroll_03_item_01 = EnrollmentItem{
 	EnrollmentID:     &enroll_02.ID,
-	ManageCourseID:   &manage_sa.ID,
+	ManageCourseID:   &manage_kdd.ID,
 	EnrollmentTypeID: &enrollmentType_Credit.ID,
 }
 
@@ -285,11 +327,13 @@ func Init_Enrollment() {
 	// Enrollment
 	db.Model(&Enrollment{}).Create(&enroll_01)
 	db.Model(&Enrollment{}).Create(&enroll_02)
+	db.Model(&Enrollment{}).Create(&enroll_03)
 
 	// EnrollmentItem
 	db.Model(&EnrollmentItem{}).Create(&enroll_01_item_01)
 	db.Model(&EnrollmentItem{}).Create(&enroll_01_item_02)
 	db.Model(&EnrollmentItem{}).Create(&enroll_02_item_01)
+	db.Model(&EnrollmentItem{}).Create(&enroll_03_item_01)
 
 	State["Enrollment"] = true
 }
@@ -360,7 +404,7 @@ var requestType_dec = RequestType{
 
 // RequestRegister data
 var req_B6200001_01 = RequestRegister{
-	ManageCourseID:  &manage_sa.ID,
+	ManageCourseID:  &manage_sa_g01.ID,
 	RequestTypeID:   &requestType_inc.ID,
 	RequestStatusID: &requestStatus_approve.ID,
 	OwnerID:         &student_B6200001.ID,

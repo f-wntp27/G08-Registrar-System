@@ -77,7 +77,7 @@ func ListBills(c *gin.Context) {
 	if err := entity.DB().Preload("PaymentType").
 		Preload("Place").
 		Preload("Enrollment").
-		Preload("Enrollment.StudentRecord").
+		Preload("Enrollment.Owner").
 		Raw("SELECT * FROM bills").Find(&bill).Error; err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -93,7 +93,7 @@ func ListIDBill(c *gin.Context) {
 	var enrollment []entity.Enrollment
 	var bill []entity.Bill
 
-	if tx := entity.DB().Where("student_record_id = ?", id).Find(&enrollment); tx.RowsAffected == 0 {
+	if tx := entity.DB().Where("owner_id = ?", id).Find(&enrollment); tx.RowsAffected == 0 {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "enrollment not found"})
 		return
 	}
@@ -103,7 +103,7 @@ func ListIDBill(c *gin.Context) {
 		if tx := entity.DB().Preload("Place").
 			Preload("PaymentType").
 			Preload("Enrollment").
-			Preload("Enrollment.StudentRecord").
+			Preload("Enrollment.Owner").
 			Where("enrollment_id = ?", enroll.ID).Find(&b); tx.RowsAffected == 0 {
 			continue
 		} else {
@@ -143,7 +143,7 @@ func GetPlace(c *gin.Context) {
 func ListEnrollmentForBill(c *gin.Context) {
 	id := c.Param("id")
 	var enrollment []entity.Enrollment
-	if err := entity.DB().Raw("SELECT * FROM enrollments WHERE student_record_id = ? ORDER BY enroll_year, enroll_trimester ASC ", id).Scan(&enrollment).Error; err != nil {
+	if err := entity.DB().Raw("SELECT * FROM enrollments WHERE owner_id = ? ORDER BY enroll_year, enroll_trimester ASC ", id).Scan(&enrollment).Error; err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
