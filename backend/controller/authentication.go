@@ -42,7 +42,7 @@ func LoginStudent(c *gin.Context) {
 	}
 
 	if tx := entity.DB().Preload("Prefix").Preload("Department").Preload("Advisor").
-		Raw("SELECT * FROM student_records WHERE student_code = ?", payload.UserCode).First(&student); tx.RowsAffected == 0 {
+		Raw("SELECT * FROM student_records WHERE student_code = ?", payload.UserCode).Find(&student); tx.RowsAffected == 0 {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "student not found"})
 		return
 	}
@@ -111,7 +111,7 @@ func LoginStaff(c *gin.Context) {
 	}
 
 	if tx := entity.DB().Preload("Prefix").
-		Raw("SELECT * FROM staff_accounts WHERE staff_code = ?", payload.UserCode).First(&staff); tx.RowsAffected == 0 {
+		Raw("SELECT * FROM staff_accounts WHERE staff_code = ?", payload.UserCode).Find(&staff); tx.RowsAffected == 0 {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "staff not found"})
 		return
 	}
@@ -155,10 +155,10 @@ func LoginStaff(c *gin.Context) {
 
 /* --- Teacher Response --- */
 type ProfessorResponse struct {
-	ID           uint
-	TeacherName  string
-	TeacherEmail string
-	ProfessorID  string
+	ID            uint
+	TeacherName   string
+	TeacherEmail  string
+	ProfessorCode string
 }
 
 type LoginProfessorResponse struct {
@@ -177,7 +177,7 @@ func LoginProfessor(c *gin.Context) {
 	}
 
 	if tx := entity.DB().
-		Raw("SELECT * FROM professors WHERE professor_id = ?", payload.UserCode).First(&teacher); tx.RowsAffected == 0 {
+		Raw("SELECT * FROM professors WHERE professor_id = ?", payload.UserCode).Find(&teacher); tx.RowsAffected == 0 {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "teacher not found"})
 		return
 	}
@@ -208,10 +208,10 @@ func LoginProfessor(c *gin.Context) {
 	tokenResponse := LoginProfessorResponse{
 		Token: signedToken,
 		Professor: ProfessorResponse{
-			ID:           teacher.ID,
-			TeacherName:  teacher.TeacherName,
-			TeacherEmail: teacher.TeacherEmail,
-			ProfessorID:  teacher.ProfessorCode,
+			ID:            teacher.ID,
+			TeacherName:   teacher.TeacherName,
+			TeacherEmail:  teacher.TeacherEmail,
+			ProfessorCode: teacher.ProfessorCode,
 		},
 	}
 
