@@ -131,7 +131,7 @@ export default function EnrollmentCreate() {
   } 
 
   /* --- Enrollment Type component --- */
-  const getCourseTypes = async() => {
+  const getEnrollmentTypes = async() => {
     const apiUrl = "http://localhost:8080/enrollment_types";
     const requestOptions = {
       method: "GET",
@@ -211,7 +211,7 @@ export default function EnrollmentCreate() {
     setOutOfRange(false);
   };
   const submit = () => {
-    if (Number(enrollment?.EnrollYear) < 2010 || Number(enrollment?.EnrollYear) > 2050) {
+    if (Number(enrollment?.EnrollYear) != new Date().getFullYear()) {
       setOutOfRange(true);
       setOutOfRangeMsg("กรุณากรอกปีการศึกษาเป็นปัจจุบัน");
       return
@@ -254,11 +254,10 @@ export default function EnrollmentCreate() {
         }
     });
   }
-  console.log(enrollment);
 
   useEffect(() => {
     getCourses();
-    getCourseTypes();
+    getEnrollmentTypes();
   }, []);
   
   return (
@@ -386,7 +385,7 @@ export default function EnrollmentCreate() {
 
             <Grid item xs={6}>
               <FormControl fullWidth variant="outlined" size="small" error={hasError}>
-                <p>ประเภท</p>
+                <p>ประเภทการลงทะเบียน</p>
                 <Select
                   value={enrollmentItem.EnrollmentTypeID}
                   inputProps={{name: "EnrollmentTypeID"}}
@@ -416,7 +415,7 @@ export default function EnrollmentCreate() {
                             </TableCell>
                             <TableCell width="40%">
                               <b>Group:</b> {item.Group}<br />
-                              <b>Time:</b> {item.TeachingTime}
+                              <b>Teaching Time:</b> {item.TeachingTime}
                             </TableCell>
                             <TableCell width="55%">
                               <b>Room:</b> {item.Room.Number}<br />
