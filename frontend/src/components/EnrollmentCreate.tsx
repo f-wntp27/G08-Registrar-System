@@ -211,7 +211,7 @@ export default function EnrollmentCreate() {
     setOutOfRange(false);
   };
   const submit = () => {
-    if (Number(enrollment?.EnrollYear) != new Date().getFullYear()) {
+    if (Number(enrollment?.EnrollYear) !== new Date().getFullYear()) {
       setOutOfRange(true);
       setOutOfRangeMsg("กรุณากรอกปีการศึกษาเป็นปัจจุบัน");
       return
@@ -247,6 +247,7 @@ export default function EnrollmentCreate() {
     fetch(apiUrl, requestOptionsPost)
       .then((response) => response.json())
       .then((res) => {
+        console.log(res.data);
         if (res.data) {
           setSuccess(true);
         } else {

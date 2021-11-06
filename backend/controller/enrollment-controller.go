@@ -62,17 +62,11 @@ func CreateEnrollment(c *gin.Context) {
 		return
 	}
 
-	// วนลูปเพื่อบันทึกรายวิชาใน 1 ใบลงทะเบียน
+	// วนลูปเพื่อค้นหารายวิชาใน 1 ใบลงทะเบียน
+	var items []entity.EnrollmentItem
 	for _, eni := range enrollment.EnrollmentItems {
 		var enrollType entity.EnrollmentType
 		var manageCourse entity.ManageCourse
-		var thisEnrollment entity.Enrollment
-
-		if tx := entity.DB().Where("owner_id = ? AND enroll_year = ? AND enroll_trimester = ? AND enroll_date_time = ?",
-			enrollment.OwnerID, enrollment.EnrollYear, enrollment.EnrollTrimester, enrollment.EnrollDateTime).First(&thisEnrollment); tx.RowsAffected == 0 {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "enrollment not found"})
-			return
-		}
 
 		// 13: ค้นหา ManageCourse ด้วย id
 		if tx := entity.DB().Where("id = ?", eni.ManageCourseID).First(&manageCourse); tx.RowsAffected == 0 {
@@ -87,18 +81,22 @@ func CreateEnrollment(c *gin.Context) {
 		}
 
 		// 15: สร้าง EnrollmentItem
-		item := entity.EnrollmentItem{
+		it := entity.EnrollmentItem{
 			ManageCourse:   manageCourse,
 			EnrollmentType: enrollType,
 			Enrollment:     en,
 		}
 
-		// 16: บันทึก
-		if err := entity.DB().Create(&item).Error; err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
-		}
+		items = append(items, it)
+
 	}
+
+	// 16: บันทึก
+	if err := entity.DB().Create(&items).Error; err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
 	entity.DB().Table("enrollment_items").Where("enrollment_id = ?", en.ID).Find(&en.EnrollmentItems)
 	c.JSON(http.StatusOK, gin.H{"data": en})
 }

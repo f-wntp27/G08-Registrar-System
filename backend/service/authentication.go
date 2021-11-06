@@ -14,7 +14,7 @@ type JwtWrapper struct {
 	ExpirationHours int64
 }
 
-// JwtClaim adds email as a claim to the token
+// JwtClaim adds user code as a claim to the token
 type JwtClaim struct {
 	UserCode string
 	jwt.StandardClaims
