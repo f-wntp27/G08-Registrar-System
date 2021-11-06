@@ -188,7 +188,7 @@ var manage_sa_g01 = ManageCourse{
 	TeachingTime:     2,
 	UngraduatedYear:  2,
 	Trimester:        1,
-	ManageCourseTime: time.Date(2021, 1, 1, 6, 0, 0, 0, time.UTC),
+	ManageCourseTime: time.Date(2021, 1, 1, 6, 0, 0, 0, time.UTC).Local(),
 	CourseID:         &course_sa.ID,
 	RoomID:           &room_01.ID,
 	ProfessorID:      &teacher_AA.ID,
@@ -199,7 +199,7 @@ var manage_sa_g02 = ManageCourse{
 	TeachingTime:     2,
 	UngraduatedYear:  2,
 	Trimester:        1,
-	ManageCourseTime: time.Date(2021, 1, 1, 6, 0, 0, 0, time.UTC),
+	ManageCourseTime: time.Date(2021, 1, 1, 6, 0, 0, 0, time.UTC).Local(),
 	CourseID:         &course_sa.ID,
 	RoomID:           &room_01.ID,
 	ProfessorID:      &teacher_AA.ID,
@@ -210,7 +210,7 @@ var manage_hh = ManageCourse{
 	TeachingTime:     2,
 	UngraduatedYear:  2,
 	Trimester:        1,
-	ManageCourseTime: time.Date(2021, 1, 2, 6, 0, 0, 0, time.UTC),
+	ManageCourseTime: time.Date(2021, 1, 2, 6, 0, 0, 0, time.UTC).Local(),
 	CourseID:         &course_hh.ID,
 	RoomID:           &room_02.ID,
 	ProfessorID:      &teacher_BB.ID,
@@ -221,7 +221,7 @@ var manage_kdd = ManageCourse{
 	TeachingTime:     3,
 	UngraduatedYear:  2,
 	Trimester:        1,
-	ManageCourseTime: time.Date(2021, 1, 2, 6, 0, 0, 0, time.UTC),
+	ManageCourseTime: time.Date(2021, 1, 2, 6, 0, 0, 0, time.UTC).Local(),
 	CourseID:         &course_kdd.ID,
 	RoomID:           &room_02.ID,
 	ProfessorID:      &teacher_AA.ID,
@@ -266,21 +266,21 @@ var enrollmentType_Audit = EnrollmentType{
 
 // Enrollment data
 var enroll_01 = Enrollment{
-	EnrollDateTime:  time.Date(2021, 1, 2, 6, 0, 0, 0, time.UTC),
+	EnrollDateTime:  time.Date(2021, 1, 2, 6, 0, 0, 0, time.UTC).Local(),
 	EnrollYear:      2020,
 	EnrollTrimester: 1,
 	TotalCredit:     course_sa.Credit + course_hh.Credit,
 	OwnerID:         &student_B6200001.ID,
 }
 var enroll_02 = Enrollment{
-	EnrollDateTime:  time.Date(2021, 1, 5, 6, 0, 0, 0, time.UTC),
+	EnrollDateTime:  time.Date(2021, 1, 5, 6, 0, 0, 0, time.UTC).Local(),
 	EnrollYear:      2020,
 	EnrollTrimester: 2,
 	TotalCredit:     course_sa.Credit,
 	OwnerID:         &student_B6200001.ID,
 }
 var enroll_03 = Enrollment{
-	EnrollDateTime:  time.Date(2021, 1, 5, 6, 0, 0, 0, time.UTC),
+	EnrollDateTime:  time.Date(2021, 1, 5, 6, 0, 0, 0, time.UTC).Local(),
 	EnrollYear:      2020,
 	EnrollTrimester: 1,
 	TotalCredit:     course_kdd.Credit,
@@ -408,21 +408,21 @@ var req_B6200001_01 = RequestRegister{
 	RequestTypeID:   &requestType_inc.ID,
 	RequestStatusID: &requestStatus_approve.ID,
 	OwnerID:         &student_B6200001.ID,
-	RequestTime:     time.Date(2021, 1, 2, 10, 0, 0, 0, time.UTC),
+	RequestTime:     time.Date(2021, 1, 2, 10, 0, 0, 0, time.UTC).Local(),
 }
 var req_B6200001_02 = RequestRegister{
 	ManageCourseID:  &manage_hh.ID,
 	RequestTypeID:   &requestType_inc.ID,
 	RequestStatusID: &requestStatus_wait.ID,
 	OwnerID:         &student_B6200001.ID,
-	RequestTime:     time.Date(2021, 1, 3, 9, 0, 0, 0, time.UTC),
+	RequestTime:     time.Date(2021, 1, 3, 9, 0, 0, 0, time.UTC).Local(),
 }
 var req_B6200002_01 = RequestRegister{
 	ManageCourseID:  &manage_hh.ID,
 	RequestTypeID:   &requestType_inc.ID,
 	RequestStatusID: &requestStatus_wait.ID,
 	OwnerID:         &student_B6200002.ID,
-	RequestTime:     time.Date(2021, 1, 3, 11, 0, 0, 0, time.UTC),
+	RequestTime:     time.Date(2021, 1, 3, 11, 0, 0, 0, time.UTC).Local(),
 }
 
 func Init_RequestRegister() {
