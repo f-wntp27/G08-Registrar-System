@@ -23,7 +23,7 @@ type Enrollment struct {
 	OwnerID *uint
 	Owner   StudentRecord `gorm:"references:ID"`
 
-	EnrollmentItems []EnrollmentItem `gorm:"foreignKey:EnrollmentID"`
+	EnrollmentItems []EnrollmentItem `gorm:"foreignKey:EnrollmentID; constraint:OnDelete:CASCADE"`
 }
 
 type EnrollmentItem struct {
