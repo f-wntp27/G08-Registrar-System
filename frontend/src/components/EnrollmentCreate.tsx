@@ -106,30 +106,7 @@ export default function EnrollmentCreate() {
 
   /* --- Manage Course component --- */  
   // getManageCoursesFromCourseID with parameter
-  const getManageCoursesFromCourseID = async() => {
-    if (selectedCourse.ID === 0) {
-      setManageCourses([]);
-      return
-    }
-    const apiUrl = "http://localhost:8080/manage_courses/course/" + selectedCourse.ID;
-    const requestOptions = {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-        "Content-Type": "application/json",
-      },
-    }
-
-    fetch(apiUrl, requestOptions)
-      .then((response) => response.json())
-      .then((res) => {
-        if(res.data) {
-          setManageCourses(res.data)
-        } else {
-          console.log("else")
-        }
-      });
-  } 
+  
 
   /* --- Enrollment Type component --- */
   const getEnrollmentTypes = async() => {
@@ -263,7 +240,33 @@ export default function EnrollmentCreate() {
     getEnrollmentTypes();
   }, []);
   
+  // Callback when update selectedCourse.ID
   useEffect(() => {
+    const getManageCoursesFromCourseID = async() => {
+      if (selectedCourse.ID === 0) {
+        setManageCourses([]);
+        return
+      }
+      const apiUrl = "http://localhost:8080/manage_courses/course/" + selectedCourse.ID;
+      const requestOptions = {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          "Content-Type": "application/json",
+        },
+      }
+
+      fetch(apiUrl, requestOptions)
+        .then((response) => response.json())
+        .then((res) => {
+          if(res.data) {
+            setManageCourses(res.data)
+          } else {
+            console.log("else")
+          }
+        });
+    } 
+
     getManageCoursesFromCourseID();
   }, [selectedCourse.ID]);
   
