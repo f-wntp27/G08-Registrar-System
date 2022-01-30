@@ -23,7 +23,7 @@ type StudentResponse struct {
 	LastName    string
 	StudentCode string
 	Department  entity.Department
-	Advisor     entity.Professor
+	Advisor     ProfessorResponse
 }
 
 type LoginStudentResponse struct {
@@ -79,7 +79,12 @@ func LoginStudent(c *gin.Context) {
 			LastName:    student.LastName,
 			StudentCode: student.StudentCode,
 			Department:  student.Department,
-			Advisor:     student.Advisor,
+			Advisor: ProfessorResponse{
+				ID:            student.Advisor.ID,
+				TeacherName:   student.Advisor.TeacherName,
+				TeacherEmail:  student.Advisor.TeacherEmail,
+				ProfessorCode: student.Advisor.ProfessorCode,
+			},
 		},
 	}
 
