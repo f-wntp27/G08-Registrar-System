@@ -6,6 +6,7 @@ import (
 	"sa-project-g08/backend/entity"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 // GET /enrollment_types
@@ -63,53 +64,58 @@ func CreateEnrollment(c *gin.Context) {
 	}
 
 	// วนลูปเพื่อค้นหารายวิชาใน 1 ใบลงทะเบียน
-	var items []entity.EnrollmentItem
-	for _, eni := range enrollment.EnrollmentItems {
-		var enrollType entity.EnrollmentType
-		var manageCourse entity.ManageCourse
+	entity.DB().Transaction(func(tx *gorm.DB) error {
+		var items []entity.EnrollmentItem
+		for _, eni := range enrollment.EnrollmentItems {
+			var enrollType entity.EnrollmentType
+			var manageCourse entity.ManageCourse
 
-		// 13: ค้นหา ManageCourse ด้วย id
-		if tx := entity.DB().Where("id = ?", eni.ManageCourseID).First(&manageCourse); tx.RowsAffected == 0 {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "manage course not found"})
-			return
+			// 13: ค้นหา ManageCourse ด้วย id
+			if tx1 := entity.DB().Where("id = ?", eni.ManageCourseID).First(&manageCourse); tx.RowsAffected == 0 {
+				c.JSON(http.StatusBadRequest, gin.H{"error": "manage course not found"})
+				return tx1.Error
+			}
+
+			// 14: ค้นหา EnrollmentType ด้วย id
+			if tx1 := entity.DB().Where("id = ?", eni.EnrollmentTypeID).First(&enrollType); tx.RowsAffected == 0 {
+				c.JSON(http.StatusBadRequest, gin.H{"error": "course type not found"})
+				return tx1.Error
+			}
+
+			// 15: สร้าง EnrollmentItem
+			it := entity.EnrollmentItem{
+				ManageCourse:   manageCourse,
+				EnrollmentType: enrollType,
+				Enrollment:     en,
+			}
+
+			items = append(items, it)
+
 		}
 
-		// 14: ค้นหา EnrollmentType ด้วย id
-		if tx := entity.DB().Where("id = ?", eni.EnrollmentTypeID).First(&enrollType); tx.RowsAffected == 0 {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "course type not found"})
-			return
+		// 16: บันทึก
+		if err := entity.DB().Create(&items).Error; err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return err
 		}
 
-		// 15: สร้าง EnrollmentItem
-		it := entity.EnrollmentItem{
-			ManageCourse:   manageCourse,
-			EnrollmentType: enrollType,
-			Enrollment:     en,
-		}
+		entity.DB().Table("enrollment_items").Where("enrollment_id = ?", en.ID).Find(&en.EnrollmentItems)
+		c.JSON(http.StatusOK, gin.H{"data": en})
 
-		items = append(items, it)
+		return nil
+	})
 
-	}
-
-	// 16: บันทึก
-	if err := entity.DB().Create(&items).Error; err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	entity.DB().Table("enrollment_items").Where("enrollment_id = ?", en.ID).Find(&en.EnrollmentItems)
-	c.JSON(http.StatusOK, gin.H{"data": en})
 }
 
 // GET /enrollments
 func ListEnrollments(c *gin.Context) {
 	var enrollments []entity.Enrollment
 	if err := entity.DB().Table("enrollments").
-		Preload("StudentRecord").
+		Preload("Owner").
 		Preload("EnrollmentItems").
 		Preload("EnrollmentItems.EnrollmentType").
 		Preload("EnrollmentItems.ManageCourse").
-		Preload("EnrollmentItems.ManageCourse.Course").Scan(&enrollments).Error; err != nil {
+		Preload("EnrollmentItems.ManageCourse.Course").Find(&enrollments).Error; err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
