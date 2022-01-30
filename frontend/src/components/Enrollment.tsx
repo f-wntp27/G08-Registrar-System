@@ -30,7 +30,12 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-function ListEnrollments(enroll: EnrollmentsInterface) {
+export interface EnrollmentProps {
+  enrollment: EnrollmentsInterface;
+}
+
+function ListEnrollments(enroll: EnrollmentProps) {
+  // open for collapse component
   const [open, setOpen] = useState(false);
   const classes = useStyles();
 
@@ -42,11 +47,11 @@ function ListEnrollments(enroll: EnrollmentsInterface) {
             {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
           </IconButton>
         </TableCell>
-        <TableCell align="left">{enroll.Owner.StudentCode}</TableCell>
-        <TableCell align="center">{enroll.EnrollYear}</TableCell>
-        <TableCell align="center">{enroll.EnrollTrimester}</TableCell>
-        <TableCell align="center">{moment(enroll.EnrollDateTime).format("DD/MM/YYYY hh:mm A")}</TableCell>
-        <TableCell align="center">{enroll.TotalCredit}</TableCell>
+        <TableCell align="left">{enroll.enrollment.Owner.StudentCode}</TableCell>
+        <TableCell align="center">{enroll.enrollment.EnrollYear}</TableCell>
+        <TableCell align="center">{enroll.enrollment.EnrollTrimester}</TableCell>
+        <TableCell align="center">{moment(enroll.enrollment.EnrollDateTime).format("DD/MM/YYYY hh:mm A")}</TableCell>
+        <TableCell align="center">{enroll.enrollment.TotalCredit}</TableCell>
       </TableRow>
       <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
@@ -63,7 +68,7 @@ function ListEnrollments(enroll: EnrollmentsInterface) {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {enroll.EnrollmentItems.map((clist: EnrollmentItemsInterface) => (
+                  {enroll.enrollment.EnrollmentItems.map((clist: EnrollmentItemsInterface) => (
                     <TableRow key={clist.ID}>
                       <TableCell align="center">{clist.ManageCourse.Course.CourseCode}</TableCell>
                       <TableCell align="left">{clist.ManageCourse.Course.Name}</TableCell>
@@ -101,7 +106,7 @@ export default function Enrollments() {
       .then((response) => response.json())
       .then((res) => {
         if (res.data) {
-            setEnrolls(res.data);
+          setEnrolls(res.data);
         } else {
           console.log("else");
         }
@@ -156,14 +161,7 @@ export default function Enrollments() {
                 {enrolls.map((enroll: EnrollmentsInterface, index) => (
                   <ListEnrollments 
                     key={enroll.ID}
-                    ID={enroll.ID} 
-                    EnrollYear={enroll.EnrollYear} 
-                    EnrollTrimester={enroll.EnrollTrimester} 
-                    EnrollDateTime={enroll.EnrollDateTime}
-                    TotalCredit={enroll.TotalCredit}
-                    Owner={enroll.Owner} 
-                    OwnerID={enroll.OwnerID}
-                    EnrollmentItems={enroll.EnrollmentItems} />
+                    enrollment={enroll} />
                 ))}
               </TableBody>
             </Table>

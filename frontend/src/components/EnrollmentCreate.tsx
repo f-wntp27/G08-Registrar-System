@@ -63,7 +63,7 @@ export default function EnrollmentCreate() {
   // If combo box is not selected, it's alert error.
   const [hasError, setHasError] = useState<boolean>(false);
 
-  // If Year or Trimester is not in range, it's alert error.
+  // If Year or Trimester is not in range, it's alert warning.
   const [outOfRange, setOutOfRange] = useState<boolean>(false);
   const [outOfRangeMsg, setOutOfRangeMsg] = useState<string>("");
 
@@ -95,22 +95,23 @@ export default function EnrollmentCreate() {
         }
       });
   };
+
   const handleCourseChange = (event: ChangeEvent<{name?: string; value: unknown}>) => {
     const name = event.target.name as keyof typeof selectedCourse;
     setSelectedCourse({...selectedCourse, [name]: event.target.value,});
 
     // Find ManageCourse from course ID after select course
-    getManageCoursesFromCourseID(event.target.value as number);
+    // getManageCoursesFromCourseID(event.target.value as number);
   };
 
   /* --- Manage Course component --- */  
-  //getManageCoursesFromCourseID with parameter
-  const getManageCoursesFromCourseID = async(CourseID: number | undefined) => {
-    if (CourseID === 0) {
+  // getManageCoursesFromCourseID with parameter
+  const getManageCoursesFromCourseID = async() => {
+    if (selectedCourse.ID === 0) {
       setManageCourses([]);
       return
     }
-    const apiUrl = "http://localhost:8080/manage_courses/course/" + CourseID;
+    const apiUrl = "http://localhost:8080/manage_courses/course/" + selectedCourse.ID;
     const requestOptions = {
       method: "GET",
       headers: {
@@ -210,6 +211,7 @@ export default function EnrollmentCreate() {
     setIsItemEmpty(false);
     setOutOfRange(false);
   };
+
   const submit = () => {
     if (Number(enrollment?.EnrollYear) !== new Date().getFullYear()) {
       setOutOfRange(true);
@@ -260,6 +262,10 @@ export default function EnrollmentCreate() {
     getCourses();
     getEnrollmentTypes();
   }, []);
+  
+  useEffect(() => {
+    getManageCoursesFromCourseID();
+  }, [selectedCourse.ID]);
   
   return (
     <div>
@@ -318,7 +324,6 @@ export default function EnrollmentCreate() {
                   type="number"
                   inputProps={{ min: 2010, max: 2050 }}
                   value={enrollment.EnrollYear}
-                  defaultValue={2021}
                   onChange={handleYearTrimesterChange}
                 />
               </FormControl>
@@ -332,7 +337,6 @@ export default function EnrollmentCreate() {
                   type="number"
                   inputProps={{ min: 1, max: 3 }}
                   value={enrollment.EnrollTrimester}
-                  defaultValue={1}
                   onChange={handleYearTrimesterChange}
                 />
               </FormControl>
